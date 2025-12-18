@@ -15,20 +15,17 @@ def create_reservation(product_id, qty, actor):
     product.available_stock -= int(qty)
     product.reserved_stock += int(qty)
     product.save()
-
     reservation = Reservation.objects.create(
         product=product,
         quantity=qty,
         expires_at=now() + timedelta(minutes=1)
     )
-
     audit_log(actor, 'RESERVATION_CREATED', reservation,
     new_value={'qty': qty})
-
     return reservation
 
 @transaction.atomic
-def create_order_and_reservation(product_id, qty, actor):
+def create_order_and_reservation(product_id, qty, actor=None):
     product = Product.objects.select_for_update().get(id=product_id)
     if product.available_stock < int(qty):
         raise ValueError('Insufficient stock')
