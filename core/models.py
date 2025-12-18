@@ -27,6 +27,13 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    class Meta:
+        indexes = [
+            models.Index(fields=['-created_at']),
+            models.Index(fields=['status']),
+            models.Index(fields=['total']),
+        ]
+    
     def save(self, *args, **kwargs):
         if self.product and self.total is None:
             self.total = float(self.product.price) * float(self.quantity)
