@@ -1,5 +1,5 @@
-from core.audit import audit_log
 from reservations.services import fulfill_reservation
+from .models import audit_log
 
 ORDER_STATE_TRANSITIONS = {
     "pending": ["confirmed", "cancelled"],
@@ -11,16 +11,15 @@ ORDER_STATE_TRANSITIONS = {
 }
 
 def transition_order(order, new_status):
-    print("new status: ", ORDER_STATE_TRANSITIONS[order.status])
     if new_status not in ORDER_STATE_TRANSITIONS[order.status]:
-        raise ValueError("Invalid transition")
+        raise ValueError("Invalid status")
     old = order.status
     if old == "pending":
         reservation = order.reservation_set.filter(is_active=True).first()
         if not reservation:
-            raise ValueError("No active reservation found for this order")
+            raise ValueError("No active reservation found")
         if reservation.is_expired:
-            raise ValueError("Reservation has expired")
+            raise ValueError("Reservation expired")
 
         fulfill_reservation(reservation.id, actor="system")
     

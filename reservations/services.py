@@ -1,11 +1,9 @@
 from django.db import transaction
 from django.utils.timezone import now
 from datetime import timedelta
-from core.models import Product, Order
+from core.models import Product, Order, audit_log
 from .models import Reservation
-from core.audit import audit_log
 
-# Manually added code =======
 @transaction.atomic
 def create_reservation(product_id, qty, actor):
     product = Product.objects.select_for_update().get(id=product_id)
@@ -18,7 +16,7 @@ def create_reservation(product_id, qty, actor):
     reservation = Reservation.objects.create(
         product=product,
         quantity=qty,
-        expires_at=now() + timedelta(minutes=1)
+        expires_at=now() + timedelta(minutes=10)
     )
     audit_log(actor, 'RESERVATION_CREATED', reservation,
     new_value={'qty': qty})
@@ -43,7 +41,7 @@ def create_order_and_reservation(product_id, qty, actor=None):
         product=product,
         order=order,
         quantity=qty,
-        expires_at=now() + timedelta(minutes=1)
+        expires_at=now() + timedelta(minutes=10)
     )
 
     audit_log(

@@ -41,18 +41,24 @@ class OrderAPIViews(viewsets.ModelViewSet):
             queryset = queryset.filter(total__gte=min_total)
         if max_total:
             queryset = queryset.filter(total__lte=max_total)
-
-        # --- Sorting ---
+        
         sort = self.request.query_params.get("sort")
         if sort == "newest":
             queryset = queryset.order_by("-created_at")
         elif sort == "highest":
             queryset = queryset.order_by("-total")
 
-        # --- Optimization ---
-        queryset = queryset.select_related("product")  # join user table
+        queryset = queryset.select_related("product")
 
         return queryset
+
+    def post(self, request, *args, **kwargs):
+        return Response(
+            {
+                "request_id": request.request_id,
+                "message": "Use /create-order/ endpoint to create orders.",
+            }, status=405
+        )
 
 
 class OrderCreateAPI(APIView):
@@ -71,8 +77,6 @@ class OrderCreateAPI(APIView):
         return Response(
             {
                 "request_id": request.request_id,
-                "order_id": serializer.instance.id,
-                "status": serializer.instance.status,
                 "data": serializer.data,
             }
         )
