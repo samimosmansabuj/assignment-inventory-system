@@ -27,7 +27,8 @@ It handles:
 ---
 
 ## Architecture
-<img width="367" height="397" alt="work flow diagram" src="https://github.com/user-attachments/assets/61a82435-3a39-4daa-aba9-8a716b50d435" />
+<img width="367" height="397" alt="work flow diagram" src="https://github.com/user-attachments/assets/ddcf2f41-89c1-421f-93d1-97f6acb57685" />
+
 
 ### Explanation:
 1. **User/API** sends a request to create a reservation or order.  
